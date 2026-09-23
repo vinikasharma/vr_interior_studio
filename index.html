@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VR Interior Studio</title>
+
+<script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  background:#111;
+}
+
+#panel{
+  position:fixed;
+  z-index:10;
+  top:15px;
+  left:15px;
+  width:300px;
+  max-height:calc(100vh - 30px);
+  overflow-y:auto;
+  padding:16px;
+  border-radius:16px;
+  background:rgba(20,20,28,.96);
+  color:white;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+
+#panel h1{
+  margin:0;
+  font-size:21px;
+}
+
+.subtitle{
+  color:#aaa;
+  font-size:12px;
+  margin:5px 0 15px;
+}
+
+.section{
+  margin-top:14px;
+}
+
+.title{
+  color:#aaa;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:7px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+
+button{
+  border:0;
+  border-radius:8px;
+  padding:9px 4px;
+  color:white;
+  background:#33343d;
+  cursor:pointer;
+  font-size:11px;
+}
+
+button:hover{
+  background:#555762;
+}
+
+.color{
+  height:30px;
+}
+
+.danger{
+  background:#963e50;
+}
+
+.full{
+  width:100%;
+}
+
+#status{
+  margin-top:12px;
+  padding:9px;
+  background:rgba(255,255,255,.08);
+  border-radius:8px;
+  font-size:11px;
+  color:#ddd;
+}
+
+#help{
+  position:fixed;
+  z-index:10;
+  right:15px;
+  bottom:15px;
+  color:white;
+  background:rgba(0,0,0,.7);
+  padding:10px 13px;
+  border-radius:10px;
+  font-size:11px;
+}
+
+@media(max-width:700px){
+  #panel{
+    width:250px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     CONTROL PANEL
+===================================================== -->
+
+<div id="panel">
+
+<h1>VR Interior Studio</h1>
+<div class="subtitle">
+Design your room in 3D
+</div>
+
+
+<!-- WALL -->
+
+<div class="section">
+<div class="title">Wall</div>
+
+<div class="grid">
+<button onclick="selectWall('all')">All</button>
+<button onclick="selectWall('back')">Back</button>
+<button onclick="selectWall('left')">Left</button>
+<button onclick="selectWall('right')">Right</button>
+<button onclick="selectWall('front')">Front</button>
+</div>
+</div>
+
+
+<!-- COLORS -->
+
+<div class="section">
+<div class="title">Wall Colour</div>
+
+<div class="grid">
+
+<button class="color"
+style="background:#f5f1e8"
+onclick="setWallColor('#f5f1e8')"></button>
+
+<button class="color"
+style="background:#d9e7f2"
+onclick="setWallColor('#d9e7f2')"></button>
+
+<button class="color"
+style="background:#c8b6d9"
+onclick="setWallColor('#c8b6d9')"></button>
+
+<button class="color"
+style="background:#b8c9b0"
+onclick="setWallColor('#b8c9b0')"></button>
+
+<button class="color"
+style="background:#d8c4b6"
+onclick="setWallColor('#d8c4b6')"></button>
+
+<button class="color"
+style="background:#444952"
+onclick="setWallColor('#444952')"></button>
+
+</div>
+</div>
+
+
+<!-- FLOOR -->
+
+<div class="section">
+<div class="title">Floor</div>
+
+<div class="grid">
+
+<button onclick="setFloor('#9b7653')">Wood</button>
+<button onclick="setFloor('#d7d7d7')">Tile</button>
+<button onclick="setFloor('#eeeeee')">Marble</button>
+<button onclick="setFloor('#55565c')">Carpet</button>
+<button onclick="setFloor('#b9a38e')">Beige</button>
+<button onclick="setFloor('#303030')">Dark</button>
+
+</div>
+</div>
+
+
+<!-- LIVING -->
+
+<div class="section">
+<div class="title">Living Room</div>
+
+<div class="grid">
+
+<button onclick="addFurniture('sofa')">Sofa</button>
+<button onclick="addFurniture('table')">Table</button>
+<button onclick="addFurniture('tv')">TV</button>
+<button onclick="addFurniture('tvunit')">TV Unit</button>
+<button onclick="addFurniture('lamp')">Lamp</button>
+<button onclick="addFurniture('plant')">Plant</button>
+
+</div>
+</div>
+
+
+<!-- GAMING -->
+
+<div class="section">
+<div class="title">Gaming</div>
+
+<div class="grid">
+
+<button onclick="addFurniture('playstation')">PS5</button>
+<button onclick="addFurniture('controller')">Controller</button>
+<button onclick="addFurniture('gamingdesk')">Gaming Desk</button>
+<button onclick="addFurniture('gamingchair')">Gaming Chair</button>
+
+</div>
+</div>
+
+
+<!-- STORAGE -->
+
+<div class="section">
+<div class="title">Storage & Furniture</div>
+
+<div class="grid">
+
+<button onclick="addFurniture('bookshelf')">Bookshelf</button>
+<button onclick="addFurniture('cabinet')">Cabinet</button>
+<button onclick="addFurniture('chair')">Chair</button>
+<button onclick="addFurniture('bed')">Bed</button>
+<button onclick="addFurniture('coffeetable')">Coffee Table</button>
+
+</div>
+</div>
+
+
+<!-- MOVE -->
+
+<div class="section">
+<div class="title">Move Selected Furniture</div>
+
+<div class="grid">
+
+<button onclick="moveSelected('left')">←</button>
+<button onclick="moveSelected('forward')">↑</button>
+<button onclick="moveSelected('right')">→</button>
+<button onclick="moveSelected('back')">↓</button>
+
+<button onclick="rotateSelected(-15)">↶ Rotate</button>
+<button onclick="rotateSelected(15)">↷ Rotate</button>
+
+<button onclick="scaleSelected(.9)">− Size</button>
+<button onclick="scaleSelected(1.1)">+ Size</button>
+<button onclick="deleteSelected()">Delete</button>
+
+</div>
+</div>
+
+
+<!-- LIGHTING -->
+
+<div class="section">
+<div class="title">Lighting</div>
+
+<div class="grid">
+<button onclick="lighting('warm')">Warm</button>
+<button onclick="lighting('cool')">Cool</button>
+<button onclick="lighting('bright')">Bright</button>
+</div>
+</div>
+
+
+<button class="danger full"
+onclick="resetRoom()">
+RESET ROOM
+</button>
+
+
+<div id="status">
+Selected: None
+</div>
+
+</div>
+
+
+<div id="help">
+Desktop: Click furniture → use controls<br>
+VR: Point → Hold Trigger → Move controller → Release
+</div>
+
+
+<!-- =====================================================
+     A-FRAME SCENE
+===================================================== -->
+
+<a-scene
+  renderer="antialias:true; colorManagement:true"
+  background="color:#b9c4cf"
+  shadow="type:pcfsoft"
+  xr-mode-ui="enabled:true">
+
+
+<!-- LIGHT -->
+
+<a-entity
+id="ambient"
+light="type:ambient;intensity:1.2;color:#ffffff">
+</a-entity>
+
+<a-entity
+id="mainLight"
+position="-2 5 2"
+light="type:directional;intensity:2;color:#fff1df;castShadow:true">
+</a-entity>
+
+<a-entity
+position="0 3 0"
+light="type:point;intensity:1.2;distance:10;color:#fff1d0">
+</a-entity>
+
+
+<!-- =====================================================
+     ROOM
+===================================================== -->
+
+<a-plane
+id="floor"
+position="0 0 0"
+rotation="-90 0 0"
+width="8"
+height="8"
+material="color:#9b7653"
+shadow="receive:true">
+</a-plane>
+
+
+<!-- BACK WALL -->
+
+<a-box
+id="wall-back"
+class="wall"
+position="0 2 -4"
+width="8"
+height="4"
+depth=".15"
+material="color:#f5f1e8">
+</a-box>
+
+
+<!-- LEFT -->
+
+<a-box
+id="wall-left"
+class="wall"
+position="-4 2 0"
+width=".15"
+height="4"
+depth="8"
+material="color:#f5f1e8">
+</a-box>
+
+
+<!-- RIGHT -->
+
+<a-box
+id="wall-right"
+class="wall"
+position="4 2 0"
+width=".15"
+height="4"
+depth="8"
+material="color:#f5f1e8">
+</a-box>
+
+
+<!-- FRONT -->
+
+<a-box
+id="wall-front"
+class="wall"
+position="0 2 4"
+width="8"
+height="4"
+depth=".15"
+material="color:#f5f1e8">
+</a-box>
+
+
+<!-- WINDOW -->
+
+<a-entity position="0 2.2 -3.9">
+
+<a-box
+width="2.8"
+height="1.8"
+depth=".05"
+material="color:#20242a">
+</a-box>
+
+<a-plane
+position="0 0 .04"
+width="2.45"
+height="1.5"
+material="color:#80aeca">
+</a-plane>
+
+<a-box
+position="0 0 .08"
+width=".05"
+height="1.5"
+depth=".03"
+material="color:#fff">
+</a-box>
+
+<a-box
+position="0 0 .08"
+width="2.45"
+height=".05"
+depth=".03"
+material="color:#fff">
+</a-box>
+
+</a-entity>
+
+
+<!-- FURNITURE -->
+
+<a-entity id="furniture"></a-entity>
+
+
+<!-- CAMERA -->
+
+<a-entity
+id="rig"
+position="0 0 3">
+
+<a-camera
+position="0 1.6 0"
+look-controls>
+</a-camera>
+
+</a-entity>
+
+
+<!-- VR CONTROLLERS -->
+
+<a-entity
+id="leftController"
+laser-controls="hand:left"
+raycaster="objects:.interactive;far:10"
+line="color:#66ccff">
+</a-entity>
+
+<a-entity
+id="rightController"
+laser-controls="hand:right"
+raycaster="objects:.interactive;far:10"
+line="color:#ff88cc">
+</a-entity>
+
+
+</a-scene>
+
+
+<script>
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let selectedObject = null;
+
+let selectedWall = "all";
+
+let grabbedObject = null;
+
+let grabbingController = null;
+
+let grabOffset = new THREE.Vector3();
+
+let idCounter = 0;
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function status(text){
+
+  document.getElementById("status")
+  .innerText = text;
+
+}
+
+
+/* =====================================================
+   WALL
+===================================================== */
+
+function selectWall(wall){
+
+  selectedWall = wall;
+
+  status(
+    "Wall selected: " + wall
+  );
+
+}
+
+
+function setWallColor(color){
+
+  const walls = {
+
+    back:
+    document.getElementById("wall-back"),
+
+    left:
+    document.getElementById("wall-left"),
+
+    right:
+    document.getElementById("wall-right"),
+
+    front:
+    document.getElementById("wall-front")
+
+  };
+
+
+  if(selectedWall === "all"){
+
+    Object.values(walls).forEach(
+      wall => {
+
+        wall.setAttribute(
+          "material",
+          "color",
+          color
+        );
+
+      }
+    );
+
+  }else{
+
+    walls[selectedWall]
+    .setAttribute(
+      "material",
+      "color",
+      color
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   FLOOR
+===================================================== */
+
+function setFloor(color){
+
+  document
+  .getElementById("floor")
+  .setAttribute(
+    "material",
+    "color",
+    color
+  );
+
+}
+
+
+/* =====================================================
+   FURNITURE CREATION
+===================================================== */
+
+function createFurniture(type){
+
+  const e =
+    document.createElement("a-entity");
+
+
+  e.classList.add(
+    "interactive"
+  );
+
+
+  e.id =
+    "item-" + (++idCounter);
+
+
+  e.setAttribute(
+    "data-furniture",
+    type
+  );
+
+
+  /*
+     Default positions
+  */
+
+  const positions = {
+
+    sofa:
+    "0 0 -1.8",
+
+    table:
+    "0 0 .2",
+
+    tv:
+    "0 0 -3.35",
+
+    tvunit:
+    "0 0 -2.7",
+
+    playstation:
+    "0 0 -2.7",
+
+    controller:
+    ".6 .1 -2.5",
+
+    gamingdesk:
+    "1.8 0 -1.5",
+
+    gamingchair:
+    "1.8 0 -.4",
+
+    bookshelf:
+    "-2.8 0 -2.8",
+
+    cabinet:
+    "2.8 0 -2",
+
+    chair:
+    "1.5 0 .5",
+
+    bed:
+    "0 0 -1",
+
+    lamp:
+    "-2 0 -1",
+
+    plant:
+    "2.5 0 1",
+
+    coffeetable:
+    "0 0 .5"
+
+  };
+
+
+  e.setAttribute(
+    "position",
+    positions[type] ||
+    "0 0 0"
+  );
+
+
+  /* =================================================
+     SOFA
+  ================================================= */
+
+  if(type === "sofa"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .45 0"
+    width="2.5"
+    height=".55"
+    depth=".9"
+    material="color:#626b78"
+    shadow="cast:true">
+    </a-box>
+
+    <a-box
+    position="0 .85 -.3"
+    width="2.5"
+    height=".75"
+    depth=".3"
+    material="color:#6d7785">
+    </a-box>
+
+    <a-box
+    position="-1.1 .7 0"
+    width=".25"
+    height=".65"
+    depth=".95"
+    material="color:#59616d">
+    </a-box>
+
+    <a-box
+    position="1.1 .7 0"
+    width=".25"
+    height=".65"
+    depth=".95"
+    material="color:#59616d">
+    </a-box>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     TABLE
+  ================================================= */
+
+  if(type === "table"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .75 0"
+    width="1.8"
+    height=".15"
+    depth="1"
+    material="color:#805331">
+    </a-box>
+
+    <a-cylinder
+    position="0 .35 0"
+    radius=".12"
+    height=".7"
+    material="color:#5c3923">
+    </a-cylinder>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     TV
+  ================================================= */
+
+  if(type === "tv"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 1.65 0"
+    width="2.7"
+    height="1.5"
+    depth=".12"
+    material="color:#111">
+    </a-box>
+
+    <a-box
+    position="0 1.65 -.07"
+    width="2.48"
+    height="1.28"
+    depth=".03"
+    material="color:#193a53"
+    emissive="#102d42"
+    emissiveIntensity=".4">
+    </a-box>
+
+    <a-cylinder
+    position="0 .82 0"
+    radius=".1"
+    height=".4"
+    material="color:#222">
+    </a-cylinder>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     TV UNIT
+  ================================================= */
+
+  if(type === "tvunit"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .45 0"
+    width="2.9"
+    height=".8"
+    depth=".55"
+    material="color:#684936">
+    </a-box>
+
+    <a-box
+    position="-.8 .45 -.3"
+    width=".7"
+    height=".45"
+    depth=".04"
+    material="color:#292929">
+    </a-box>
+
+    <a-box
+    position=".8 .45 -.3"
+    width=".7"
+    height=".45"
+    depth=".04"
+    material="color:#292929">
+    </a-box>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     PLAYSTATION
+  ================================================= */
+
+  if(type === "playstation"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .3 0"
+    width=".75"
+    height=".2"
+    depth=".45"
+    material="color:#eeeeee"
+    shadow="cast:true">
+    </a-box>
+
+    <a-box
+    position="0 .41 0"
+    width=".28"
+    height=".025"
+    depth=".3"
+    material="color:#222">
+    </a-box>
+
+    <a-sphere
+    position=".2 .42 -.23"
+    radius=".025"
+    material="color:#4fc3ff">
+    </a-sphere>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     CONTROLLER
+  ================================================= */
+
+  if(type === "controller"){
+
+    e.innerHTML = `
+
+    <a-sphere
+    position="0 .35 0"
+    radius=".22"
+    scale="1 .45 .7"
+    material="color:#ddd">
+    </a-sphere>
+
+    <a-cylinder
+    position="-.08 .45 -.07"
+    radius=".035"
+    height=".08"
+    material="color:#222">
+    </a-cylinder>
+
+    <a-cylinder
+    position=".08 .45 -.07"
+    radius=".035"
+    height=".08"
+    material="color:#222">
+    </a-cylinder>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     BOOKSHELF
+  ================================================= */
+
+  if(type === "bookshelf"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 1.7 0"
+    width="1.7"
+    height=".12"
+    depth=".4"
+    material="color:#71482f">
+    </a-box>
+
+    <a-box
+    position="0 .1 0"
+    width="1.7"
+    height=".12"
+    depth=".4"
+    material="color:#71482f">
+    </a-box>
+
+    <a-box
+    position="-.78 .9 0"
+    width=".12"
+    height="1.7"
+    depth=".4"
+    material="color:#71482f">
+    </a-box>
+
+    <a-box
+    position=".78 .9 0"
+    width=".12"
+    height="1.7"
+    depth=".4"
+    material="color:#71482f">
+    </a-box>
+
+    <a-box
+    position="0 .65 0"
+    width="1.55"
+    height=".08"
+    depth=".38"
+    material="color:#71482f">
+    </a-box>
+
+    <a-box
+    position="0 1.15 0"
+    width="1.55"
+    height=".08"
+    depth=".38"
+    material="color:#71482f">
+    </a-box>
+
+    <!-- books -->
+
+    <a-box
+    position="-.48 .9 -.04"
+    width=".18"
+    height=".42"
+    depth=".28"
+    material="color:#a94d4d">
+    </a-box>
+
+    <a-box
+    position="-.25 .9 -.04"
+    width=".15"
+    height=".48"
+    depth=".28"
+    material="color:#496d8a">
+    </a-box>
+
+    <a-box
+    position="0 .9 -.04"
+    width=".17"
+    height=".4"
+    depth=".28"
+    material="color:#c29b48">
+    </a-box>
+
+    <a-box
+    position=".25 .9 -.04"
+    width=".18"
+    height=".44"
+    depth=".28"
+    material="color:#64845d">
+    </a-box>
+
+    <a-box
+    position="-.35 1.4 -.04"
+    width=".17"
+    height=".4"
+    depth=".28"
+    material="color:#75548b">
+    </a-box>
+
+    <a-box
+    position="-.1 1.4 -.04"
+    width=".15"
+    height=".46"
+    depth=".28"
+    material="color:#bb6c4c">
+    </a-box>
+
+    <a-box
+    position=".18 1.4 -.04"
+    width=".19"
+    height=".4"
+    depth=".28"
+    material="color:#52798d">
+    </a-box>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     GAMING DESK
+  ================================================= */
+
+  if(type === "gamingdesk"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 1 0"
+    width="2.5"
+    height=".12"
+    depth=".8"
+    material="color:#25262b">
+    </a-box>
+
+    <a-box
+    position="-1 .5 0"
+    width=".12"
+    height="1"
+    depth=".12"
+    material="color:#17181b">
+    </a-box>
+
+    <a-box
+    position="1 .5 0"
+    width=".12"
+    height="1"
+    depth=".12"
+    material="color:#17181b">
+    </a-box>
+
+    <a-box
+    position="0 1.55 -.15"
+    width="1.5"
+    height=".85"
+    depth=".08"
+    material="color:#111">
+    </a-box>
+
+    <a-plane
+    position="0 1.55 -.2"
+    width="1.3"
+    height=".65"
+    material="color:#173e59">
+    </a-plane>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     GAMING CHAIR
+  ================================================= */
+
+  if(type === "gamingchair"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .65 0"
+    width=".9"
+    height=".18"
+    depth=".9"
+    material="color:#292930">
+    </a-box>
+
+    <a-box
+    position="0 1.25 -.3"
+    width=".85"
+    height="1.3"
+    depth=".18"
+    material="color:#363641">
+    </a-box>
+
+    <a-cylinder
+    position="0 .3 0"
+    radius=".08"
+    height=".65"
+    material="color:#222">
+    </a-cylinder>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     BED
+  ================================================= */
+
+  if(type === "bed"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .35 0"
+    width="2.4"
+    height=".3"
+    depth="3"
+    material="color:#76543f">
+    </a-box>
+
+    <a-box
+    position="0 .6 0"
+    width="2.2"
+    height=".35"
+    depth="2.8"
+    material="color:#eee">
+    </a-box>
+
+    <a-box
+    position="0 1 -1.25"
+    width="2.4"
+    height="1.3"
+    depth=".18"
+    material="color:#76543f">
+    </a-box>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     CHAIR
+  ================================================= */
+
+  if(type === "chair"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .55 0"
+    width=".8"
+    height=".15"
+    depth=".8"
+    material="color:#805337">
+    </a-box>
+
+    <a-box
+    position="0 1 -.3"
+    width=".8"
+    height="1"
+    depth=".12"
+    material="color:#805337">
+    </a-box>
+
+    <a-box
+    position="-.3 .25 0"
+    width=".12"
+    height=".55"
+    depth=".12"
+    material="color:#5c3927">
+    </a-box>
+
+    <a-box
+    position=".3 .25 0"
+    width=".12"
+    height=".55"
+    depth=".12"
+    material="color:#5c3927">
+    </a-box>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     CABINET
+  ================================================= */
+
+  if(type === "cabinet"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 1 0"
+    width="1.4"
+    height="2"
+    depth=".55"
+    material="color:#79553d">
+    </a-box>
+
+    <a-box
+    position="0 1 .29"
+    width="1.2"
+    height=".8"
+    depth=".04"
+    material="color:#9a6d4d">
+    </a-box>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     LAMP
+  ================================================= */
+
+  if(type === "lamp"){
+
+    e.innerHTML = `
+
+    <a-cylinder
+    position="0 .8 0"
+    radius=".05"
+    height="1.6"
+    material="color:#444">
+    </a-cylinder>
+
+    <a-cone
+    position="0 1.55 0"
+    radius-bottom=".4"
+    radius-top=".2"
+    height=".5"
+    material="color:#e8d9bf">
+    </a-cone>
+
+    <a-sphere
+    position="0 1.4 0"
+    radius=".13"
+    material="color:#fff0a8">
+    </a-sphere>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     PLANT
+  ================================================= */
+
+  if(type === "plant"){
+
+    e.innerHTML = `
+
+    <a-cylinder
+    position="0 .25 0"
+    radius=".35"
+    height=".5"
+    material="color:#98613d">
+    </a-cylinder>
+
+    <a-cylinder
+    position="0 1 0"
+    radius=".04"
+    height="1.5"
+    material="color:#557b4b">
+    </a-cylinder>
+
+    <a-sphere
+    position="-.25 1.35 0"
+    radius=".3"
+    scale=".6 1 .5"
+    material="color:#4d8154">
+    </a-sphere>
+
+    <a-sphere
+    position=".25 1.55 0"
+    radius=".3"
+    scale=".6 1 .5"
+    material="color:#60945d">
+    </a-sphere>
+
+    <a-sphere
+    position="0 1.8 0"
+    radius=".3"
+    scale=".55 1 .5"
+    material="color:#47794d">
+    </a-sphere>
+
+    `;
+
+  }
+
+
+  /* =================================================
+     COFFEE TABLE
+  ================================================= */
+
+  if(type === "coffeetable"){
+
+    e.innerHTML = `
+
+    <a-box
+    position="0 .65 0"
+    width="1.6"
+    height=".12"
+    depth=".8"
+    material="color:#80512f">
+    </a-box>
+
+    <a-cylinder
+    position="-.55 .3 -.25"
+    radius=".06"
+    height=".6"
+    material="color:#5b3825">
+    </a-cylinder>
+
+    <a-cylinder
+    position=".55 .3 -.25"
+    radius=".06"
+    height=".6"
+    material="color:#5b3825">
+    </a-cylinder>
+
+    <a-cylinder
+    position="-.55 .3 .25"
+    radius=".06"
+    height=".6"
+    material="color:#5b3825">
+    </a-cylinder>
+
+    <a-cylinder
+    position=".55 .3 .25"
+    radius=".06"
+    height=".6"
+    material="color:#5b3825">
+    </a-cylinder>
+
+    `;
+
+  }
+
+
+  document
+  .getElementById("furniture")
+  .appendChild(e);
+
+
+  makeMovable(e);
+
+  selectFurniture(e);
+
+  return e;
+
+}
+
+
+/* =====================================================
+   ADD FURNITURE
+===================================================== */
+
+function addFurniture(type){
+
+  createFurniture(type);
+
+  status(
+    "Added: " + type
+  );
+
+}
+
+
+/* =====================================================
+   SELECT
+===================================================== */
+
+function selectFurniture(object){
+
+  if(selectedObject &&
+     selectedObject !== object){
+
+    selectedObject.setAttribute(
+      "scale",
+      "1 1 1"
+    );
+
+  }
+
+
+  selectedObject = object;
+
+
+  object.setAttribute(
+    "scale",
+    "1.08 1.08 1.08"
+  );
+
+
+  status(
+    "Selected: " +
+    object.getAttribute(
+      "data-furniture"
+    )
+  );
+
+}
+
+
+/* =====================================================
+   MAKE EVERY FURNITURE MOVABLE
+===================================================== */
+
+function makeMovable(object){
+
+  object.classList.add(
+    "interactive"
+  );
+
+
+  /*
+     Desktop click
+  */
+
+  object.addEventListener(
+    "click",
+    function(){
+
+      selectFurniture(object);
+
+    }
+  );
+
+
+  /*
+     Hover
+  */
+
+  object.addEventListener(
+    "mouseenter",
+    function(){
+
+      if(
+        object !== selectedObject &&
+        object !== grabbedObject
+      ){
+
+        object.setAttribute(
+          "scale",
+          "1.04 1.04 1.04"
+        );
+
+      }
+
+    }
+  );
+
+
+  object.addEventListener(
+    "mouseleave",
+    function(){
+
+      if(
+        object !== selectedObject &&
+        object !== grabbedObject
+      ){
+
+        object.setAttribute(
+          "scale",
+          "1 1 1"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   DESKTOP MOVE
+===================================================== */
+
+function moveSelected(direction){
+
+  if(!selectedObject){
+
+    status(
+      "Select furniture first"
+    );
+
+    return;
+
+  }
+
+
+  const p =
+    selectedObject.object3D.position;
+
+  const step = .25;
+
+
+  if(direction === "left")
+    p.x -= step;
+
+  if(direction === "right")
+    p.x += step;
+
+  if(direction === "forward")
+    p.z -= step;
+
+  if(direction === "back")
+    p.z += step;
+
+
+  clampPosition(
+    selectedObject
+  );
+
+}
+
+
+/* =====================================================
+   ROOM BOUNDARIES
+===================================================== */
+
+function clampPosition(object){
+
+  const p =
+    object.object3D.position;
+
+
+  p.x =
+    Math.max(
+      -3.4,
+      Math.min(
+        3.4,
+        p.x
+      )
+    );
+
+
+  p.z =
+    Math.max(
+      -3.4,
+      Math.min(
+        3.4,
+        p.z
+      )
+    );
+
+
+  /*
+     Keep furniture on floor
+  */
+
+  p.y = 0;
+
+}
+
+
+/* =====================================================
+   ROTATE
+===================================================== */
+
+function rotateSelected(degrees){
+
+  if(!selectedObject){
+
+    status(
+      "Select furniture first"
+    );
+
+    return;
+
+  }
+
+
+  const rotation =
+    selectedObject.getAttribute(
+      "rotation"
+    );
+
+
+  rotation.y += degrees;
+
+
+  selectedObject.setAttribute(
+    "rotation",
+    rotation
+  );
+
+}
+
+
+/* =====================================================
+   SCALE
+===================================================== */
+
+function scaleSelected(multiplier){
+
+  if(!selectedObject){
+
+    status(
+      "Select furniture first"
+    );
+
+    return;
+
+  }
+
+
+  const s =
+    selectedObject.object3D.scale;
+
+
+  s.multiplyScalar(
+    multiplier
+  );
+
+
+  const min = .45;
+  const max = 2.5;
+
+
+  s.x =
+    Math.max(
+      min,
+      Math.min(max,s.x)
+    );
+
+  s.y =
+    Math.max(
+      min,
+      Math.min(max,s.y)
+    );
+
+  s.z =
+    Math.max(
+      min,
+      Math.min(max,s.z)
+    );
+
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+function deleteSelected(){
+
+  if(!selectedObject){
+
+    status(
+      "Select furniture first"
+    );
+
+    return;
+
+  }
+
+
+  if(grabbedObject === selectedObject){
+
+    grabbedObject = null;
+
+  }
+
+
+  selectedObject.remove();
+
+  selectedObject = null;
+
+
+  status(
+    "Furniture deleted"
+  );
+
+}
+
+
+/* =====================================================
+   VR GRAB
+===================================================== */
+
+function setupController(controller){
+
+  /*
+     Trigger DOWN
+  */
+
+  controller.addEventListener(
+    "triggerdown",
+    function(){
+
+      const raycaster =
+        controller.components.raycaster;
+
+
+      if(!raycaster)
+        return;
+
+
+      const hits =
+        raycaster.intersections;
+
+
+      if(!hits ||
+         hits.length === 0)
+        return;
+
+
+      let target = null;
+
+
+      /*
+         Find furniture root
+      */
+
+      for(
+        let i=0;
+        i<hits.length;
+        i++
+      ){
+
+        let entity =
+          hits[i].object.el;
+
+
+        while(
+          entity &&
+          !entity.classList.contains(
+            "interactive"
+          )
+        ){
+
+          entity =
+            entity.parentEl;
+
+        }
+
+
+        if(
+          entity &&
+          entity.classList.contains(
+            "interactive"
+          )
+        ){
+
+          target = entity;
+
+          break;
+
+        }
+
+      }
+
+
+      if(!target)
+        return;
+
+
+      /*
+         Select
+      */
+
+      selectFurniture(target);
+
+
+      /*
+         Start grabbing
+      */
+
+      grabbedObject =
+        target;
+
+      grabbingController =
+        controller;
+
+
+      /*
+         Store offset
+      */
+
+      const controllerPos =
+        new THREE.Vector3();
+
+      controller.object3D
+        .getWorldPosition(
+          controllerPos
+        );
+
+
+      const objectPos =
+        new THREE.Vector3();
+
+      target.object3D
+        .getWorldPosition(
+          objectPos
+        );
+
+
+      grabOffset
+        .copy(objectPos)
+        .sub(controllerPos);
+
+
+      status(
+        "Grabbed: " +
+        target.getAttribute(
+          "data-furniture"
+        )
+      );
+
+    }
+  );
+
+
+  /*
+     Trigger UP
+  */
+
+  controller.addEventListener(
+    "triggerup",
+    function(){
+
+      if(
+        grabbedObject &&
+        grabbingController === controller
+      ){
+
+        clampPosition(
+          grabbedObject
+        );
+
+        status(
+          "Placed: " +
+          grabbedObject.getAttribute(
+            "data-furniture"
+          )
+        );
+
+      }
+
+
+      grabbedObject = null;
+
+      grabbingController = null;
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   VR MOVE LOOP
+===================================================== */
+
+function updateGrab(){
+
+  if(
+    !grabbedObject ||
+    !grabbingController
+  ){
+
+    return;
+
+  }
+
+
+  const controllerPos =
+    new THREE.Vector3();
+
+
+  grabbingController
+    .object3D
+    .getWorldPosition(
+      controllerPos
+    );
+
+
+  /*
+     New world position
+  */
+
+  const newPosition =
+    controllerPos
+      .clone()
+      .add(
+        grabOffset
+      );
+
+
+  /*
+     Keep floor level
+  */
+
+  newPosition.y = 0;
+
+
+  /*
+     Convert world → local
+  */
+
+  const parent =
+    grabbedObject.parent;
+
+
+  if(parent){
+
+    parent.worldToLocal(
+      newPosition
+    );
+
+  }
+
+
+  grabbedObject
+    .object3D
+    .position.copy(
+      newPosition
+    );
+
+
+  clampPosition(
+    grabbedObject
+  );
+
+}
+
+
+/* =====================================================
+   VR CONTROLLERS
+===================================================== */
+
+window.addEventListener(
+  "load",
+  function(){
+
+    const left =
+      document.getElementById(
+        "leftController"
+      );
+
+    const right =
+      document.getElementById(
+        "rightController"
+      );
+
+
+    setupController(left);
+    setupController(right);
+
+
+    /*
+       Continuous grab movement
+    */
+
+    function loop(){
+
+      updateGrab();
+
+      requestAnimationFrame(
+        loop
+      );
+
+    }
+
+
+    loop();
+
+
+    /*
+       Default furniture
+    */
+
+    setTimeout(
+      function(){
+
+        resetRoom();
+
+      },
+      500
+    );
+
+  }
+);
+
+
+/* =====================================================
+   LIGHTING
+===================================================== */
+
+function lighting(type){
+
+  const main =
+    document.getElementById(
+      "mainLight"
+    );
+
+  const ambient =
+    document.getElementById(
+      "ambient"
+    );
+
+
+  if(type === "warm"){
+
+    main.setAttribute(
+      "light",
+      "color:#fff0d0;intensity:2"
+    );
+
+    ambient.setAttribute(
+      "light",
+      "color:#fff7ed;intensity:1.1"
+    );
+
+  }
+
+
+  if(type === "cool"){
+
+    main.setAttribute(
+      "light",
+      "color:#dcecff;intensity:2"
+    );
+
+    ambient.setAttribute(
+      "light",
+      "color:#dcecff;intensity:1.1"
+    );
+
+  }
+
+
+  if(type === "bright"){
+
+    main.setAttribute(
+      "light",
+      "color:#ffffff;intensity:3"
+    );
+
+    ambient.setAttribute(
+      "light",
+      "color:#ffffff;intensity:1.5"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetRoom(){
+
+  /*
+     Walls
+  */
+
+  document
+  .querySelectorAll(".wall")
+  .forEach(
+    wall => {
+
+      wall.setAttribute(
+        "material",
+        "color",
+        "#f5f1e8"
+      );
+
+    }
+  );
+
+
+  /*
+     Floor
+  */
+
+  document
+  .getElementById("floor")
+  .setAttribute(
+    "material",
+    "color",
+    "#9b7653"
+  );
+
+
+  /*
+     Delete all furniture
+  */
+
+  document
+  .getElementById("furniture")
+  .innerHTML = "";
+
+
+  selectedObject = null;
+
+  grabbedObject = null;
+
+
+  /*
+     Default room
+  */
+
+  addFurniture("sofa");
+
+  addFurniture("table");
+
+  addFurniture("tvunit");
+
+  addFurniture("tv");
+
+  addFurniture("playstation");
+
+  addFurniture("bookshelf");
+
+  addFurniture("plant");
+
+
+  lighting("warm");
+
+
+  status(
+    "Room reset"
+  );
+
+}
+
+</script>
+
+</body>
+</html>
